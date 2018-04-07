@@ -1,7 +1,16 @@
-#R Simulation of Borda Count Election
-# The goal of this simulation is to see how often the Borda
-# Count winner loses in pairwise votes
-# IN this simulation each preference ordering is equally likely
+# R Simulation of Elections
+# The goal of this simulation is to see how changing the number of
+# voters and candidates changes relationships between voting methods
+# For example: As the number of candidates n --> inf, what is the probability that the 
+#              Borda Count Winner is the same as the Plurality Winner
+
+#---------------------------------------------------------------------------------------#
+########      TO DO:                                                             ########
+########            - define functions to simulate other voting systems          ########
+########            - determine what to do in the case of a tie                  ########
+########            - write function to find pairwise winner                     ########
+########            - change storage of voters from lists of vectors to a matrix ########
+#---------------------------------------------------------------------------------------#
 
 
 ### Function: prefOrder
@@ -20,7 +29,7 @@ trial <- function(n, x) {
   #set.seed(001)
   voters <- list()
   for (i in 1:x)
-    voters[[i]] = prefOrder(base)
+    voters[[i]] = prefOrder(base) #give the voter a random preference
   voters
 }
 
@@ -29,19 +38,19 @@ trial <- function(n, x) {
 ### Output: The Borda Counts for each candidate
 findBordaCount <- function(listy) {
   f = length(listy[[1]])
-  voteCount <- integer(f)
+  voteCount <- integer(f) #make a vector to keep track of vote totals for each candidate
   for (i in 1:length(listy)) {
     for (j in 1:f) {
       voteCount[j] = voteCount[j] + listy[[i]][j] #add the current voter's points
     }
   }
- voteCount
+ voteCount #return the vector containing each candidates point count
 }
 
 ### Function: bordaCountWinner
 ### returns the Borda Count Winner
 bordaCountWinner <- function(listy) {
-  which.max(findBordaCount(listy))
+  which.max(findBordaCount(listy)) #returns a randomly chosen winner if there is a tie
 }
 
 ### Function: findPluralityWinner
@@ -50,7 +59,7 @@ bordaCountWinner <- function(listy) {
 findPluralityWinner <- function(listy) {
   len = length(listy)
   f = length(listy[[1]])
-  winnerVec <- integer(f)
+  winnerVec <- integer(f) #create a vector keeping track of how many votes each candidate has
   for (i in 1:len) {
     maxIndex = which.max(listy[[i]])
     winnerVec[maxIndex] = winnerVec[maxIndex] + 1 #add 1 to the voter's top candidate
@@ -58,8 +67,4 @@ findPluralityWinner <- function(listy) {
   which(winnerVec == max(winnerVec)) #returns the indices of the candidates with the most votes
 }
 
-tri <- trial(5,100)
-#tri
-samp <- findPluralityWinner(tri)
-samp
 
