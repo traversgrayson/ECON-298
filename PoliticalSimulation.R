@@ -6,7 +6,7 @@
 
 ### Function: prefOrder
 ### Inputs: X, a vector of values
-### Output: a random preference ordering of X
+### Output: a random preference ordering of X, 5 is most preferred and 1 is least preferred 
 prefOrder <- function(x) {
   sample(x) #return a random preference ordering
 }
@@ -31,9 +31,8 @@ findBordaCount <- function(listy) {
   f = length(listy[[1]])
   voteCount <- integer(f)
   for (i in 1:length(listy)) {
-    print(i)
     for (j in 1:f) {
-      voteCount[j] = voteCount[j] + listy[[i]][j]
+      voteCount[j] = voteCount[j] + listy[[i]][j] #add the current voter's points
     }
   }
  voteCount
@@ -54,13 +53,13 @@ findPluralityWinner <- function(listy) {
   winnerVec <- integer(f)
   for (i in 1:len) {
     maxIndex = which.max(listy[[i]])
-    winnerVec[maxIndex] = winnerVec[maxIndex] + 1 #add 1 to the candidate with the most votes
+    winnerVec[maxIndex] = winnerVec[maxIndex] + 1 #add 1 to the voter's top candidate
   }
   which(winnerVec == max(winnerVec)) #returns the indices of the candidates with the most votes
 }
 
-tri <- trial(3,1000)
-tri
+tri <- trial(5,100)
+#tri
 samp <- findPluralityWinner(tri)
 samp
 
