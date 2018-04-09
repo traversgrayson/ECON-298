@@ -64,7 +64,8 @@ findPluralityWinner <- function(listy) {
     maxIndex = which.max(listy[[i]])
     winnerVec[maxIndex] = winnerVec[maxIndex] + 1 #add 1 to the voter's top candidate
   }
-  which(winnerVec == max(winnerVec)) #returns the indices of the candidates with the most votes
+  which.max(winnerVec)
+  # which(winnerVec == max(winnerVec)) #returns the indices of the candidates with the most votes
 }
 
 isWinnerSame <- function(listy)
