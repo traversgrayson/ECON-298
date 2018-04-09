@@ -72,5 +72,5 @@ isWinnerSame <- function(listy)
   findPluralityWinner == bordaCountWinner
 }
 
-#test <-  t(replicate(10000,isWinnerSame(3,10)))
+#test <-  t(replicate(10000,isWinnerSame(3,10))) #test with 10,000 trials
 # mean(test)  #returns proportion of trials that had same Borda Count winner and Plurality winner
