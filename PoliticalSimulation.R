@@ -15,7 +15,7 @@
 
 ### Function: prefOrder
 ### Inputs: X, a vector of values
-### Output: a random preference ordering of X, 5 is most preferred and 1 is least preferred 
+### Output: a random preference ordering of X, size(X) is most preferred and 1 is least preferred 
 prefOrder <- function(x) {
   sample(x) #return a random preference ordering
 }
