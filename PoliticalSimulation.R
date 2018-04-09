@@ -67,4 +67,10 @@ findPluralityWinner <- function(listy) {
   which(winnerVec == max(winnerVec)) #returns the indices of the candidates with the most votes
 }
 
+isWinnerSame <- function(listy)
+{
+  findPluralityWinner == bordaCountWinner
+}
 
+#test <-  t(replicate(10000,isWinnerSame(3,10)))
+# mean(test)  #returns proportion of trials that had same Borda Count winner and Plurality winner
