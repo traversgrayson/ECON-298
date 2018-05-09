@@ -84,7 +84,7 @@ makeProbVec <- function(matrixy,func) {
   summy <- sum(vec)
   for (i in 1:len) {
     prob[i] = vec[i]/summy
-    prob[i] = rnorm(1,mean = prob[i], sd = .1)
+    prob[i] = min(max(rnorm(1,mean = prob[i], sd = prob[i]/2),0), 1)
   }
   summy <- sum(prob)
   prob = prob/summy
@@ -92,6 +92,12 @@ makeProbVec <- function(matrixy,func) {
   prob
 }
 
+createDishonestVoters <- function(matrixy,probVec) {
+  for (i in 1: nrow(matrixy)) {
+    matrixy[i,] = matrixy[i,] * probVec
+  }
+  matrixy
+}
 
 isWinnerSame <- function(n,x)
 {
@@ -121,3 +127,12 @@ mat
 b <- buildMatrix(6,3) 
 rank(b)
 b
+
+butt <- function() {
+  t <- trial(4,101000)
+  myVec <- makeProbVec(t,findPluralityCount)
+  d <- createDishonestVoters(t,myVec)
+  return (findPluralityWinner(d) == findPluralityWinner(t))
+}
+
+mean(t(replicate(100,butt())))
