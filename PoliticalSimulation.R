@@ -18,7 +18,7 @@
 ### Inputs: X, a vector of values
 ### Output: a random preference ordering of X, size(X) is most preferred and 1 is least preferred 
 prefOrder <- function(x) {
-  sample(x) #return a random preference ordering
+  runif(n = x, min = 0, max = 100) #return a random preference ordering
 }
 
 
@@ -28,7 +28,7 @@ prefOrder <- function(x) {
 ### Output: Random perference orderings for X voters, voting for N candidates
 trial <- function(n, x) {
   base <- c(1:n) #Create a vector with values from 1 to n
-  voters <- matrix(0, nrow = x, ncol = length(prefOrder(base)), byrow = TRUE)
+  voters <- matrix(0, nrow = x, ncol = n, byrow = TRUE)
   for (row in 1:nrow(voters)) {
     voters[row,] = prefOrder(base)
   }
@@ -43,6 +43,7 @@ findBordaCount <- function(matrixy) {
   voteCount <- integer(len) #make a vector to keep track of vote totals for each candidate
   numVoters <- nrow(matrixy)
   for (i in 1:numVoters) {
+    matrixy[i,] = rank(matrixy[i,])
     for (j in 1:len) {
       voteCount[j] = voteCount[j] + matrixy[i,j] #add the current voter's points
     }
@@ -59,7 +60,7 @@ bordaCountWinner <- function(matrixy) {
 ### Function: findPluralityWinner
 ### Inputs: LISTY, a list of voters and their preferences
 ### Output: The Plurality winner/winners (if there is a tie)
-findPluralityWinner <- function(matrixy) {
+findPluralityCount <- function(matrixy) {
   len = nrow(matrixy)
   f = ncol(matrixy)
   winnerVec <- integer(f) #create a vector keeping track of how many votes each candidate has
@@ -67,8 +68,28 @@ findPluralityWinner <- function(matrixy) {
     maxIndex = which.max(matrixy[i,])
     winnerVec[maxIndex] = winnerVec[maxIndex] + 1 #add 1 to the voter's top candidate
   }
-  which.max(winnerVec)
+  winnerVec
+  ##which.max(winnerVec)
   # which(winnerVec == max(winnerVec)) #returns the indices of the candidates with the most votes
+}
+
+findPluralityWinner <- function(matrixy) {
+  which.max(findPluralityCount(matrixy))
+}
+
+makeProbVec <- function(matrixy,func) {
+  vec <- func(matrixy)
+  prob <- c()
+  len <- length(vec)
+  summy <- sum(vec)
+  for (i in 1:len) {
+    prob[i] = vec[i]/summy
+    prob[i] = rnorm(1,mean = prob[i], sd = .1)
+  }
+  summy <- sum(prob)
+  prob = prob/summy
+  
+  prob
 }
 
 
@@ -79,7 +100,6 @@ isWinnerSame <- function(n,x)
 }
 
 
-xtc <- NULL
 buildMatrix <- function(n,x) {
 mat <- matrix(0, nrow = n, ncol = x + 1)
 vec <- 10^(0:x)
@@ -95,5 +115,9 @@ mat
 }
 
 
-test <-  t(replicate(10000,isWinnerSame(3,10))) #test with 10,000 trials
- mean(test)  #returns proportion of trials that had same Borda Count winner and Plurality winner
+# test <-  t(replicate(10000,isWinnerSame(3,10))) #test with 10,000 trials
+# mean(test)  #returns proportion of trials that had same Borda Count winner and Plurality winner
+
+b <- buildMatrix(6,3) 
+rank(b)
+b
