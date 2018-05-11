@@ -12,25 +12,26 @@
 ########            - change storage of voters from lists of vectors to a matrix ########
 ########            - find a way to simulate strategic voting (teaming in Borda) ########
 #---------------------------------------------------------------------------------------#
-
+install.packages("xtable")
+library("xtable")
 
 ### Function: prefOrder
-### Inputs: X, a vector of values
-### Output: a random preference ordering of X, size(X) is most preferred and 1 is least preferred 
+### Inputs: X, some integer
+### Output: a vector of X values between 0 and 100 
 prefOrder <- function(x) {
-  runif(n = x, min = 0, max = 100) #return a random preference ordering
+  runif(n = x, min = 0, max = 100) #return random utilities for candidates
 }
 
 
 ### Function: Trial
 ### Inputs: N, the number of candidates that can be voted for
 ###         X, the number of voters
-### Output: Random perference orderings for X voters, voting for N candidates
+### Output: Random utility values for X voters, voting for N candidates
 trial <- function(n, x) {
   base <- c(1:n) #Create a vector with values from 1 to n
   voters <- matrix(0, nrow = x, ncol = n, byrow = TRUE)
   for (row in 1:nrow(voters)) {
-    voters[row,] = prefOrder(base)
+    voters[row,] = prefOrder(base) # Give each voter random utilities for each candidate
   }
   voters
 }
@@ -45,7 +46,7 @@ findBordaCount <- function(matrixy) {
   for (i in 1:numVoters) {
     matrixy[i,] = rank(matrixy[i,])
     for (j in 1:len) {
-      voteCount[j] = voteCount[j] + matrixy[i,j] #add the current voter's points
+      voteCount[j] = (voteCount[j] - 1) + matrixy[i,j] #add the current voter's points
     }
   }
  voteCount #return the vector containing each candidates point count
@@ -105,6 +106,12 @@ isWinnerSame <- function(n,x)
   findPluralityWinner(myTrial) == bordaCountWinner(myTrial)
 }
 
+isWinnerOptimal <- function(n,x,func)
+{
+  t <- trial(n,x)
+  func(t) == findOptimalWinner(t)
+}
+
 
 buildMatrix <- function(n,x) {
 mat <- matrix(0, nrow = n, ncol = x + 1)
@@ -112,7 +119,7 @@ vec <- 10^(0:x)
 for (i in 1:n) {
   t = 1
   for (j in vec) {
-    test <-  t(replicate(1000,isWinnerSame(i,j)))
+    test <-  t(replicate(1000,isWinnerOptimal(i,j,findScoreWinner)))
     mat[i, t] = mean(test)
     t = t + 1
   }
@@ -121,12 +128,35 @@ mat
 }
 
 
-# test <-  t(replicate(10000,isWinnerSame(3,10))) #test with 10,000 trials
-# mean(test)  #returns proportion of trials that had same Borda Count winner and Plurality winner
+findOptimalWinner <- function(matrixy) {
+  len = ncol(matrixy)
+  voteCount <- integer(len) #make a vector to keep track of vote totals for each candidate
+  numVoters <- nrow(matrixy)
+  for (i in 1:numVoters) {
+    for (j in 1:len) {
+      voteCount[j] = voteCount[j] + matrixy[i,j] #add the current voter's points
+    }
+  }
+  which.max(voteCount) #return the vector containing each candidates point count
+}
 
-b <- buildMatrix(6,3) 
-rank(b)
-b
+findScoreCount <- function(matrixy) {
+  len = ncol(matrixy)
+  scoreCount <- integer(len) #make a vector to keep track of score total
+  numVoters <- nrow(matrixy)
+  for (i in 1:numVoters) {
+    for (j in 1:len) {
+      scoreCount[j] = scoreCount[j] + matrixy[i,j] #add the current voter's utility
+    }
+  }
+  scoreCount #return the vector containing each candidates point count
+}
+
+findScoreWinner <- function(matrixy) {
+  which.max(findScoreCount(matrixy))
+}
+
+
 
 butt <- function() {
   t <- trial(4,101000)
