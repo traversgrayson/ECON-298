@@ -52,13 +52,14 @@ findBordaCount <- function(matrixy) {
  voteCount #return the vector containing each candidates point count
 }
 
+
 ### Function: bordaCountWinner
 ### returns the Borda Count Winner
 bordaCountWinner <- function(matrixy) {
   which.max(findBordaCount(matrixy)) #returns a randomly chosen winner if there is a tie
 }
 
-### Function: findPluralityWinner
+### Function: findPluralityCount
 ### Inputs: LISTY, a list of voters and their preferences
 ### Output: The Plurality winner/winners (if there is a tie)
 findPluralityCount <- function(matrixy) {
@@ -74,10 +75,17 @@ findPluralityCount <- function(matrixy) {
   # which(winnerVec == max(winnerVec)) #returns the indices of the candidates with the most votes
 }
 
+
+### Function: findPluralityCount
+### Output: winner of plurality vote
 findPluralityWinner <- function(matrixy) {
   which.max(findPluralityCount(matrixy))
 }
 
+
+### makeProbVec
+### makes a probability distribution on candidates that can be voted for
+### and creates noise in voters true perferences
 makeProbVec <- function(matrixy,func) {
   vec <- func(matrixy)
   prob <- c()
@@ -93,6 +101,7 @@ makeProbVec <- function(matrixy,func) {
   prob
 }
 
+# Apply the noise from probVec to voters
 createDishonestVoters <- function(matrixy,probVec) {
   for (i in 1: nrow(matrixy)) {
     matrixy[i,] = matrixy[i,] * probVec
@@ -100,12 +109,15 @@ createDishonestVoters <- function(matrixy,probVec) {
   matrixy
 }
 
+
+# Test to see if winners of different competitions are the same
 isWinnerSame <- function(n,x)
 {
   myTrial <- trial(n,x)
   findPluralityWinner(myTrial) == bordaCountWinner(myTrial)
 }
 
+# Check to see if winner maximizes utility
 isWinnerOptimal <- function(n,x,func)
 {
   t <- trial(n,x)
@@ -127,7 +139,7 @@ for (i in 1:n) {
 mat
 }
 
-
+# Find the candidate the maximizes utlity of voters
 findOptimalWinner <- function(matrixy) {
   len = ncol(matrixy)
   voteCount <- integer(len) #make a vector to keep track of vote totals for each candidate
